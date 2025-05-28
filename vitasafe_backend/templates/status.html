@@ -1,0 +1,73 @@
+<!-- templates/status.html -->
+<!DOCTYPE html>
+<link rel="stylesheet" href="status.css">
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Status VitaSafe</title>
+</head>
+<body>
+    <style>
+        body { 
+    margin: 0;
+    padding: 0;
+    background-color: #a5cae4;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 { 
+    color: #333; 
+    margin-bottom: 20px;
+}
+
+#status { 
+        font-size: 1.5rem; 
+        margin-top: 1rem; 
+        justify-content: center;
+}
+.caixa-status {
+    background-color: #3a788e;
+    color: white;
+    padding: 40px 60px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 1.5rem;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+    </style>
+
+        <h1>🔎 Status da Emergência (VitaSafe)</h1>
+        <div class="caixa-status" id="status">Carregando status...</div>
+
+        
+  <script>
+    function atualizarStatus() {
+      fetch("/api/status")
+        .then(res => res.json())
+        .then(data => {
+          const statusDiv = document.getElementById("status");
+          if (data.emergencia_ativa) {
+            statusDiv.innerHTML = `🚨 Emergência Ativa<br><small>${data.ultimo_alerta}</small>`;
+            statusDiv.style.color = "red";
+          } else {
+            statusDiv.innerHTML = "✅ Tudo normal";
+            statusDiv.style.color = "black";
+          }
+        })
+        .catch(() => {
+          document.getElementById("status").innerText = "❌ Erro ao carregar status.";
+        });
+    }
+
+    // Atualiza a cada 2 segundos
+    setInterval(atualizarStatus, 2000);
+    atualizarStatus();
+  </script>
+</body>
+</html>

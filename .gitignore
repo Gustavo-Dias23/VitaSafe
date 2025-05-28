@@ -1,0 +1,23 @@
+# Arquivos do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambiente virtual (se estiver usando)
+venv/
+.env/
+.venv/
+
+# Configurações locais do editor
+.vscode/
+.idea/
+
+# Arquivos temporários
+*.log
+*.tmp
+*.swp
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
