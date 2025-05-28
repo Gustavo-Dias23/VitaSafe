@@ -40,25 +40,42 @@ while cap.isOpened():
     resultado = hands.process(imagem_rgb)
 
     pelo_menos_uma_mao_aberta = False
+    alguma_mao_fechada = False
 
     if resultado.multi_hand_landmarks and resultado.multi_handedness:
         for idx, hand_landmarks in enumerate(resultado.multi_hand_landmarks):
             hand_label = resultado.multi_handedness[idx].classification[0].label  # "Right" ou "Left"
 
-            if mao_aberta(hand_landmarks, hand_label):
+            aberta = mao_aberta(hand_landmarks, hand_label)
+            if aberta:
                 pelo_menos_uma_mao_aberta = True
+            else:
+                alguma_mao_fechada = True
 
             mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-    # Lógica de detecção de emergência
+    tempo_atual = time.time()
+
+    # Emergência: Ativação
     if pelo_menos_uma_mao_aberta:
         if TEMPO_INICIO == 0:
-            TEMPO_INICIO = time.time()
-        elif time.time() - TEMPO_INICIO >= ALERTA_TEMPO and not EMERGENCIA_ATIVA:
-            print("🔴 Emergência detectada por gesto!")
-            EMERGENCIA_ATIVA = True
+            TEMPO_INICIO = tempo_atual
+        else:
+            tempo_mantido = tempo_atual - TEMPO_INICIO
+            cv2.putText(frame, f'Tempo com mao aberta: {int(tempo_mantido)}s', (30, 100),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 0), 2)
+
+            if tempo_mantido >= ALERTA_TEMPO and not EMERGENCIA_ATIVA:
+                print("🔴 Emergência detectada por gesto!")
+                EMERGENCIA_ATIVA = True
     else:
-        TEMPO_INICIO = 0  # Reinicia o tempo
+        TEMPO_INICIO = 0
+
+    # Emergência: Cancelamento
+    if EMERGENCIA_ATIVA and alguma_mao_fechada:
+        print("✅ Emergência cancelada por gesto.")
+        EMERGENCIA_ATIVA = False
+        TEMPO_INICIO = 0
 
     # Mostrar aviso
     if EMERGENCIA_ATIVA:
@@ -67,7 +84,7 @@ while cap.isOpened():
 
     cv2.imshow("VitaSafe - Gestos de Emergência", frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):  # Tecla ESC
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()
