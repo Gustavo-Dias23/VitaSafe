@@ -12,15 +12,25 @@ def home():
 def get_status():
     return jsonify({
         "emergencia_ativa": status_store.emergencia_ativa,
-        "ultimo_alerta": status_store.ultimo_alerta
+        "ultimo_alerta": status_store.ultimo_alerta,
+        "historico": status_store.historico_alertas
     })
 
 @app.route("/api/emergencia", methods=["POST"])
 def set_emergencia():
     data = request.json
-    status_store.emergencia_ativa = data.get("ativa", False)
-    status_store.ultimo_alerta = time.strftime("%Y-%m-%d %H:%M:%S") if status_store.emergencia_ativa else None
+    ativar = data.get("ativa", False)
+
+    if ativar and not status_store.emergencia_ativa:
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+        status_store.emergencia_ativa = True
+        status_store.ultimo_alerta = timestamp
+        status_store.historico_alertas.append(timestamp)
+    elif not ativar:
+        status_store.emergencia_ativa = False
+
     return jsonify({"status": "ok"})
 
 if __name__ == "__main__":
     app.run(debug=True)
+v

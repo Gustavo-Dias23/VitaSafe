@@ -1,63 +1,120 @@
-<!-- templates/status.html -->
 <!DOCTYPE html>
-<link rel="stylesheet" href="status.css">
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Status VitaSafe</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #a5cae4;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      color: #3a788e;
+      margin-bottom: 20px;
+    }
+
+    .caixa-status {
+      color: white;
+      padding: 40px 60px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .caixa-status.normal {
+      background-color: #3a788e;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .caixa-status.alerta {
+      background-color: #c0392b;
+      animation: piscar-borda 1s infinite;
+    }
+
+    @keyframes piscar-borda {
+      0%   { box-shadow: 0 0 0 4px #ff0000; }
+      50%  { box-shadow: 0 0 0 4px #ffcccc; }
+      100% { box-shadow: 0 0 0 4px #ff0000; }
+    }
+
+    .historico {
+      background-color: #ffffffcc;
+      padding: 20px;
+      border-radius: 12px;
+      width: 300px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .historico h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      color: #3a788e;
+    }
+
+    .historico ul {
+      padding-left: 20px;
+    }
+
+    .historico li {
+      font-size: 0.95rem;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-    <style>
-        body { 
-    margin: 0;
-    padding: 0;
-    background-color: #a5cae4;
-    font-family: Arial, sans-serif;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
 
-h1 { 
-    color: #333; 
-    margin-bottom: 20px;
-}
+  <h1>🔎 Status da Emergência</h1>
+  <div class="caixa-status normal" id="status">
+    Carregando status...
+  </div>
 
-#status { 
-        font-size: 1.5rem; 
-        margin-top: 1rem; 
-        justify-content: center;
-}
-.caixa-status {
-    background-color: #3a788e;
-    color: white;
-    padding: 40px 60px;
-    border-radius: 16px;
-    text-align: center;
-    font-size: 1.5rem;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-}
+  <div class="historico">
+    <h2>Últimos Alertas</h2>
+    <ul id="lista-alertas">
+      <li>Carregando histórico...</li>
+    </ul>
+  </div>
 
-    </style>
-
-        <h1>🔎 Status da Emergência (VitaSafe)</h1>
-        <div class="caixa-status" id="status">Carregando status...</div>
-
-        
   <script>
     function atualizarStatus() {
       fetch("/api/status")
         .then(res => res.json())
         .then(data => {
           const statusDiv = document.getElementById("status");
+
           if (data.emergencia_ativa) {
             statusDiv.innerHTML = `🚨 Emergência Ativa<br><small>${data.ultimo_alerta}</small>`;
-            statusDiv.style.color = "red";
+            statusDiv.classList.remove("normal");
+            statusDiv.classList.add("alerta");
           } else {
             statusDiv.innerHTML = "✅ Tudo normal";
-            statusDiv.style.color = "black";
+            statusDiv.classList.remove("alerta");
+            statusDiv.classList.add("normal");
+          }
+
+          const lista = document.getElementById("lista-alertas");
+          lista.innerHTML = "";
+
+          if (data.historico && data.historico.length > 0) {
+            data.historico.slice(-5).reverse().forEach(alerta => {
+              const li = document.createElement("li");
+              li.textContent = alerta;
+              lista.appendChild(li);
+            });
+          } else {
+            const li = document.createElement("li");
+            li.textContent = "Nenhum alerta registrado.";
+            lista.appendChild(li);
           }
         })
         .catch(() => {
@@ -65,9 +122,9 @@ h1 {
         });
     }
 
-    // Atualiza a cada 2 segundos
     setInterval(atualizarStatus, 2000);
     atualizarStatus();
   </script>
+
 </body>
 </html>
