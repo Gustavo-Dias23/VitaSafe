@@ -17,7 +17,7 @@ O **VitaSafe** é um sistema de monitoramento por visão computacional que detec
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/Gustavo-Dias23/VitaSafe
+git clone https://github.com/Gustavo-Dias23/VitaSafe.git
 cd vitasafe
 ```
 
