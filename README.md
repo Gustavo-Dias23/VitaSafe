@@ -1,3 +1,7 @@
+Gustavo Dias - RM550820
+Joel Barros - RM550378
+Leonardo moreira - RM550988
+
 # VitaSafe - Sistema Comunitário de Resposta Rápida
 
 O **VitaSafe** é um sistema de monitoramento por visão computacional que detecta gestos de emergência com as mãos, ideal para auxiliar pessoas que dependem de equipamentos elétricos vitais. Utilizando a câmera do dispositivo e a biblioteca MediaPipe, o sistema identifica uma mão aberta por 3 segundos para acionar um alerta de emergência, e uma mão fechada por 3 segundos para cancelar o alerta. Toda a lógica é integrada a um backend Flask, que fornece status em tempo real via API e interface web.
