@@ -1,6 +1,6 @@
-Gustavo Dias - RM550820
-Joel Barros - RM550378
-Leonardo moreira - RM550988
+- Gustavo Dias - RM550820
+- Joel Barros - RM550378
+- Leonardo moreira - RM550988
 
 # VitaSafe - Sistema Comunitário de Resposta Rápida
 
